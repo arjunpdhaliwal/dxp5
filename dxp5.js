@@ -1,4 +1,5 @@
 dxp5FiltMap = {}
+dxp5FiltChain = [];
 
 /*  Load the filter shader from a file.
     Must be used during preload.                */
@@ -10,7 +11,7 @@ dxp5LoadFilterSrc = function (filtFilename) {
         result => {
             loadedShaderSrc = result.join('\n');
             loadedFilt = true;
-            dxp5FiltMap[filtFilename] = loadedShaderSrc
+            dxp5FiltMap[filtFilename] = loadedShaderSrc;
         }
     );
 };
@@ -90,3 +91,21 @@ dxp5LoadFilter = function (
 
     return loadedShader;
 };
+
+
+/*  Loads a bunch of filter shaders during
+    preload to run in sequence.
+    Depends on dxp5LoadFilter.                  */
+dxp5LoadFilterChain = function(filenames) {
+    for (file of filenames) {
+        dxp5FiltChain.push(dxp5LoadFilter(file));
+    }
+}
+
+
+/*  Runs the currently loaded filter chain.     */
+dxp5RunFilterChain = function() {
+    for (currFilter of dxp5FiltChain) {
+        filter(currFilter);
+    }
+}
